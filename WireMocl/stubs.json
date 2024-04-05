@@ -1,0 +1,14 @@
+{
+  "request": {
+    "method": "GET",
+    "url": "/vikastest"
+  },
+  "response": {
+    "status": 200,
+    "body": "{\"firstName\": \"Vikas\",\"LastName\": \"Kanti\"}",
+
+    "headers": {
+      "content-type": "application/json"
+    }
+  }
+}
