@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 
 import java.util.*;
@@ -779,6 +779,270 @@ public class StackProblem {
             }
 
         }
+
+//    Input: ops = ["5","2","C","D","+"]
+//    Output: 30
+//    Explanation:
+//            "5" - Add 5 to the record, record is now [5].
+//            "2" - Add 2 to the record, record is now [5, 2].
+//            "C" - Invalidate and remove the previous score, record is now [5].
+//            "D" - Add 2 * 5 = 10 to the record, record is now [5, 10].
+//            "+" - Add 5 + 10 = 15 to the record, record is now [5, 10, 15].
+//    The total sum is 5 + 10 + 15 = 30.
+    public int calPoints(String[] operations) {
+        Stack<Integer> st = new Stack<>();
+
+        for(String s : operations)
+        {
+            if(s.matches("[0-9]"))
+            {
+                st.push(Integer.parseInt(s));
+            }
+            else if(s.equals("C"))
+            {
+               if(!s.isEmpty())
+                st.pop();
+            }
+            else if(s.equals("D"))
+            {
+                int val = 2 * st.peek();
+                st.push(val);
+            }
+            else if(s.equals("+"))
+            {
+                int last = st.pop();
+                int secondLast = st.peek();
+                int val = last + secondLast;
+                st.push(last);
+                st.push(val);
+
+            }
+        }
+
+        int sum = 0 ;
+        while(!st.isEmpty())
+        {
+            sum = sum + st.pop();
+        }
+        return sum;
+    }
+
+    public String removeDuplicates(String s) {
+        String result = "";
+        Stack st = new Stack();
+
+        for(char t : s.toCharArray())
+        {
+            if(!st.isEmpty() && st.peek().equals(t))
+                st.pop();
+
+            else
+                st.push(t);
+
+
+        }
+//       List l =  st.reversed();
+//
+//        for(int i = 0 ; i < l.size(); i++)
+//            result += l.get(i);
+
+return result;
+
+    }
+
+    // monotonic stack
+    
+    public int sumSubarrayMins(int[] arr) {
+        int n = arr.length;
+        int mod = (int)1e9 + 7;
+
+        long res = 0;
+
+        int[] left = new int[n];   // distance to previous smaller
+        int[] right = new int[n];  // distance to next smaller
+
+        Stack<Integer> st = new Stack<>();
+
+        // 1. Previous Smaller Element
+        for (int i = 0; i < n; i++) {
+            while (!st.isEmpty() && arr[st.peek()] > arr[i]) {
+                st.pop();
+            }
+            left[i] = st.isEmpty() ? (i + 1) : (i - st.peek());
+            st.push(i);
+        }
+
+        st.clear();
+
+        // 2. Next Smaller Element
+        for (int i = n - 1; i >= 0; i--) {
+            while (!st.isEmpty() && arr[st.peek()] >= arr[i]) {
+                st.pop();
+            }
+            right[i] = st.isEmpty() ? (n - i) : (st.peek() - i);
+            st.push(i);
+        }
+
+        // 3. Contribution of each element
+        for (int i = 0; i < n; i++) {
+            res = (res + (long)arr[i] * left[i] * right[i]) % mod;
+        }
+
+        return (int)res;
+    }
+
+    public int[] mostCompetitive(int[] nums, int k) {
+        int n=nums.length;
+        Stack<Integer> st=new Stack<>();
+        int[] res=new int[k];
+        int rem=n-k;
+        for(int i=0;i<n;i++){
+            while(!st.isEmpty() && st.peek()>nums[i] && rem>0){
+                st.pop();
+                rem--;
+            }
+            st.push(nums[i]);
+
+        }
+        while(rem>0){
+            st.pop();
+            rem--;
+        }
+        for(int i=k-1;i>=0;i--){
+            res[i]=st.pop();
+        }
+        return res;
+    }
+
+    public int[] findLexMax(int[] nums, int k) {
+        int n = nums.length;
+        Stack<Integer> st = new Stack<>();
+        int[] res = new int[k];
+
+        /* we have to form a k digit number which is lexicographically greatest
+         that gives some hint that we need to maintain a monotonic decreasing stack
+         and rem=n-k means we will remove n-k smaller digits from stack
+         lets say nums=[6,7,4,8,9] and k=3, we have to remove 5-3=2 digits from the stack,
+         while we try to form monotonic decreasing satck
+         o our max number will be [8,9]
+         */
+        int rem = n - k;
+        for (int i = 0; i < n; i++) {
+            while (!st.isEmpty() && st.peek() < nums[i] && rem > 0) {
+                st.pop();
+                rem--;
+            }
+            st.push(nums[i]);
+
+        }
+
+        /* if still some elements can be removed, the best option would be to remove the
+        elements from the top of the stack, as we are mainting a monotonic decreasing satck
+        so elemets at the top would be smaller
+        take this example arr-[6,4,2] k=2 ans would be [6,4]
+        */
+        while (rem > 0) {
+            st.pop();
+            rem--;
+        }
+        for (int i = k - 1; i >= 0; i--) {
+            res[i] = st.pop();
+        }
+        return res;
+    }
+
+
+    private static boolean findMax(int[] arr1, int[] arr2, int p1,int p2) {
+        while (p1 < arr1.length && p2 < arr2.length) {
+            if (arr1[p1] < arr2[p2]) {
+                return false;
+            } else if (arr1[p1] > arr2[p2]) {
+                return true;
+            } else {
+                p1++;
+                p2++;
+            }
+        }
+        // when p1 is empty returns true, so that in merge function it picks up values of arr2
+        // when p1==arr1.length, then returns false,so that we keep pn picking arr2 elements
+        return p1!=arr1.length; // tricky
+    }
+
+
+    // think of the case [6,0,4] and [6,7], can t do simple logic like merge two sorted arrays
+    // we need to decide which pointer to move forward based on the rest of the array,
+    // if both elements are same compare the next element, and then decide
+    private int[] merge(int[] nums1, int[] nums2, int k) {
+        int[] res = new int[k];
+        int resIndex = 0;
+        int p1 = 0;
+        int p2 = 0;
+
+        while (resIndex<res.length) {
+            res[resIndex++]=findMax(nums1,nums2,p1,p2)?nums1[p1++]:nums2[p2++];// tricky
+        }
+
+        return res;
+    }
+
+    public int[] maxNumber(int[] nums1, int[] nums2, int k) {
+        int len1 = nums1.length;
+        int len2 = nums2.length;
+        int[] maxRes = new int[k];
+        for (int i = 0; i <= k; i++) {
+            int j = k - i;
+            if (i <= len1 && (k - i) <= len2) { // skip invalid cases, imp step!
+                int[] maxLex1 = findLexMax(nums1, i);
+                int[] maxLex2 = findLexMax(nums2, j);
+                int[] res = merge(maxLex1, maxLex2, k);
+                boolean compareRes = findMax(res, maxRes,0,0);
+                if (compareRes) {
+                    maxRes = res;
+                }
+            }
+        }
+        return maxRes;
+    }
+
+    public List<Integer> replaceNonCoprimes(int[] nums) {
+        Stack<Integer> s = new Stack<>();
+        s.push(nums[0]);
+
+        for (int i = 1; i < nums.length; i++) {
+            int x = nums[i];
+
+            // Keep merging with stack top if non-coprime
+            while (!s.isEmpty() && getGCD(s.peek(), x) > 1) {
+                int top = s.pop();
+                x = getLCM(top, x);  // replace with LCM
+            }
+            s.push(x);
+        }
+
+        // Convert stack to list in order
+        List<Integer> result = new ArrayList<>(s);
+        return result;
+    }
+
+    public int getGCD(int a, int b) {
+        while (b != 0) {
+            int temp = b;
+            b = a % b;
+            a = temp;
+        }
+        return a;
+    }
+
+    public int getLCM(int a, int b) {
+        return a / getGCD(a, b) * b; // safer to avoid overflow
+    }
+
+
+
+
+
+
+
 
 }
 

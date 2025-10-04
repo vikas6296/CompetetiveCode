@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 import java.util.*;
 import java.util.regex.Pattern;
@@ -36,7 +36,19 @@ public class StringManipulation {
 
         //countSegments("Hello, my name is John");
 
-        System.out.println(processStr("z*#"));
+       // System.out.println(processStr("z*#"));
+
+      //  System.out.println(solution(new String []{"is","valid","right"},"isValid"));
+
+      //  System.out.println(checkSubsequenceCount("abcde",new String []{"aa","acd","abd","ace","bde"}));
+        //System.out.println(isSubsequenceArr("abcde",new String []{"aa","acd","abd","ace","bde"}));
+        //System.out.println(removeDigit("1231",'1'));
+
+      //  System.out.println(characterFreq("vikasa","sakiv"));
+
+       // System.out.println(fractionToDecimal(4,333));
+
+        System.out.println(minimumOps("race"));
     }
 
     //    Input: palindrome = "abccba"
@@ -863,6 +875,641 @@ return result;
         return String.valueOf(t);
     }
 
+    public boolean backspaceCompare(String s, String t) {
+       Stack<Character> sb = new Stack<>();
+       Stack<Character> st = new Stack<>();
+
+       for(char o  : s.toCharArray())
+       {
+            if(!sb.isEmpty() && o == '#')
+                sb.pop();
+            else
+                sb.push(o);
+       }
 
 
+        for(char o  : t.toCharArray())
+        {
+            if(!st.isEmpty() && o == '#')
+                st.pop();
+            else
+                st.push(o);
+        }
+
+        while(!sb.isEmpty() && !st.isEmpty())
+        {
+            if(sb.pop() != st.pop())
+                return false;
+        }
+
+        return true;
+
+    }
+
+
+
+    public List<String> commonChars(String[] words) {
+        int[] minFreq = new int[26];
+        Arrays.fill(minFreq, Integer.MAX_VALUE);
+
+        for (String word : words) {
+            int[] charCount = new int[26];
+            for (char c : word.toCharArray()) {
+                charCount[c - 'a']++;
+            }
+            for (int i = 0; i < 26; i++) {
+                minFreq[i] = Math.min(minFreq[i], charCount[i]);
+            }
+        }
+
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < 26; i++) {
+            while (minFreq[i] > 0) {
+                result.add(Character.toString((char) (i + 'a')));
+                minFreq[i]--;
+            }
+        }
+
+        return result;
+
+
+
+
+    }
+
+
+    public static boolean solution(String[] words, String variableName) {
+        Set<String> wordSet = new HashSet<>();
+        for (String word : words) {
+            wordSet.add(word.toLowerCase());
+        }
+
+        List<String> tokens = splitCamelCase(variableName);
+        for (String token : tokens) {
+            if (!wordSet.contains(token.toLowerCase())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static List<String> splitCamelCase(String s) {
+        List<String> tokens = new ArrayList<>();
+        StringBuilder current = new StringBuilder();
+
+        for (char c : s.toCharArray()) {
+            if (Character.isUpperCase(c)) {
+                if (current.length() > 0) {
+                    tokens.add(current.toString());
+                }
+                current = new StringBuilder();
+                current.append(Character.toLowerCase(c)); // Normalize to lowercase
+            } else {
+                current.append(c);
+            }
+        }
+
+        if (current.length() > 0) {
+            tokens.add(current.toString());
+        }
+
+        return tokens;
+    }
+
+    public int maxRepeating(String sequence, String word) {
+        int k = 0;
+        StringBuilder sb = new StringBuilder();
+
+        while (true) {
+            sb.append(word);
+            if (sequence.contains(sb.toString())) {
+                k++;
+            } else {
+                break;
+            }
+        }
+
+
+        return k;
+    }
+// String s = "abcde"
+   // String words []={"aa","acd","abd","ace","bde"}
+
+   public static int checkSubsequenceCount(String s, String words[])
+   {
+       int count=0;
+
+       for(int i = 0 ; i < words.length ; i++)
+       {
+           int index = 0 ;
+           int j = 0;
+
+           while(index != s.length() && j != words[i].length())
+           {
+               if(s.charAt(index) == words[i].charAt(j) )
+               {
+                   j++;
+               }
+               index++;
+           }
+
+           if(j == words[i].length())
+               count++;
+
+
+       }
+
+       return count;
+   }
+
+   public static int isSubsequenceArr(String s, String words[])
+   {
+       int count = 0;
+
+       HashMap<Character,List<Integer> > m = new HashMap<>();
+
+       for(int i = 0 ; i < s.length() ; i++)
+       {
+           m.computeIfAbsent(s.charAt(i),k -> new ArrayList<>()).add(i) ;
+       }
+
+       for(String word : words)
+       {
+           if(isSubsequenceStr(word,m))
+           count++;
+       }
+
+return count;
+
+   }
+
+    public static boolean isSubsequenceStr(String word,HashMap<Character,List<Integer> > m)
+    {
+      int prevIndex = -1;
+
+        for(char t : word.toCharArray())
+        {
+            if(!m.containsKey(t))
+                return false;
+
+            int nextIndex =findNextIndex(m.get(t),prevIndex);
+            if(nextIndex == -1)
+                return false;
+
+            prevIndex = nextIndex;
+
+        }
+
+        return 2 > 1;
+    }
+
+    public static int findNextIndex(List<Integer> positions,int prevIndex)
+    {
+        int start = 0;
+        int right = positions.size() - 1;
+        int nextIndex = -1;
+        while(start <= right)
+        {
+            int mid = start + (right - start) /2;
+
+            if(positions.get(mid) > prevIndex)
+            {
+                nextIndex  = positions.get(mid);
+                right = mid - 1;
+
+            }
+            else
+                start = mid + 1;
+
+
+        }
+        return nextIndex;
+    }
+
+//    Example 1:
+//
+//    Input: number = "123", digit = "3"
+//    Output: "12"
+//    Explanation: There is only one '3' in "123". After removing '3', the result is "12".
+//    Example 2:
+//
+//    Input: number = "1231", digit = "1"
+//    Output: "231"
+//    Explanation: We can remove the first '1' to get "231" or remove the second '1' to get "123".
+//    Since 231 > 123, we return "231".
+
+    public String removeDigit(String number, char digit) {
+        String maxString = "";
+
+        for (int i = 0; i < number.length(); i++) {
+            if (number.charAt(i) == digit) {
+                StringBuilder sb = new StringBuilder(number);
+                sb.deleteCharAt(i);
+                String candidate = sb.toString();
+
+                if (maxString.isEmpty() || candidate.compareTo(maxString) > 0) {
+                    maxString = candidate;
+                }
+            }
+        }
+
+        return maxString;
+    }
+
+
+
+
+    public String removeDuplicates(String s) {
+        String result = "";
+        Stack st = new Stack();
+
+        for(char t : s.toCharArray())
+        {
+            if(!st.isEmpty() && st.peek().equals(t))
+                st.pop();
+
+            else
+                st.push(t);
+
+
+        }
+
+        while(!s.isEmpty())
+        {
+            result += st.pop();
+        }
+
+        return reversed(result);
+
+
+    }
+
+    public String reversed(String s)
+    {
+        char t [] = s.toCharArray();
+        int start = 0;
+        int end = t.length -1;
+
+        while(start < end)
+        {
+            char temp = t[start];
+            t[start] = t[end];
+            t[end] = temp;
+            start++;
+            end--;
+        }
+
+        return String.valueOf(t);
+    }
+
+
+
+
+
+
+
+    public String reverseOnlyLetters(String s) {
+        char r[] = s.toCharArray();
+        int start = 0;
+        int end = r.length - 1;
+
+        while(start < end)
+        {
+
+            if(Character.isUpperCase(r[start]) || Character.isLowerCase(r[start]) || Character.isUpperCase(r[end]) ||
+                    Character.isLowerCase(r[end]))
+            {
+                char temp = r[start];
+                r[start] = r[end];
+                r[end] = temp;
+                start++;
+                end--;
+
+            }
+
+
+
+        }
+
+        return String.valueOf(r);
+
+
+
+    }
+
+    public String mostCommonWord(String paragraph, String[] banned) {
+        paragraph = paragraph.toLowerCase().replaceAll("[^a-z]", " ");
+
+        // Store banned words in a set for fast lookup
+        Set<String> bannedSet = new HashSet<>(Arrays.asList(banned));
+
+        // Count word frequencies
+        Map<String, Integer> freq = new HashMap<>();
+        for (String word : paragraph.split("\\s+")) {
+            if (word.isEmpty() || bannedSet.contains(word)) continue;
+            freq.put(word, freq.getOrDefault(word, 0) + 1);
+        }
+
+        // Find the most frequent non-banned word
+        String result = "";
+        int maxCount = 0;
+        for (Map.Entry<String, Integer> entry : freq.entrySet()) {
+            if (entry.getValue() > maxCount) {
+                maxCount = entry.getValue();
+                result = entry.getKey();
+            }
+        }
+
+        return result;
+    }
+
+    public int secondHighest(String s) {
+        PriorityQueue<Integer> p = new PriorityQueue<Integer>();
+
+
+        for(char r : s.toCharArray())
+        {
+            if(Character.isDigit(r))
+                p.offer(Integer.parseInt(String.valueOf(r)));
+
+            if(p.size() > 2)
+                p.poll();
+
+        }
+
+        return p.isEmpty() ? -1 : p.peek();
+    }
+
+      public static boolean characterFreq(String s,String u)
+      {
+          int [] freq = new int[26];
+
+          for(char t : s.toCharArray())
+          {
+              int val = t - 'a';
+              freq[val]++;
+          }
+
+          for(char o : u.toCharArray())
+          {
+              int val = o - 'a';
+              freq[val]--;
+          }
+
+          for(int i : freq)
+          {
+              if(i == 1)
+                  return false;
+          }
+
+  return true;
+
+      }
+
+// STring permutation if s1 is permutation of s2 
+
+    // s1 = "ab", s2 = "eidbaooo"
+    public boolean checkInclusion(String s1, String s2) {
+        if (s1.length() > s2.length()) {
+            return false;
+        }
+
+        HashMap<Character, Integer> s1Count = new HashMap<>();
+        HashMap<Character, Integer> s2Count = new HashMap<>();
+
+        for (int i = 0; i < s1.length(); i++) {
+            s1Count.put(s1.charAt(i), s1Count.getOrDefault(s1.charAt(i), 0) + 1);
+            s2Count.put(s2.charAt(i), s2Count.getOrDefault(s2.charAt(i), 0) + 1);
+        }
+
+        if (s1Count.equals(s2Count)) {
+            return true;
+        }
+
+        int left = 0;
+        for (int right = s1.length(); right < s2.length(); right++) {
+            char charRight = s2.charAt(right);
+            s2Count.put(charRight, s2Count.getOrDefault(charRight, 0) + 1);
+
+            char charLeft = s2.charAt(left);
+            s2Count.put(charLeft, s2Count.get(charLeft) - 1);
+            if (s2Count.get(charLeft) == 0)
+            {
+                s2Count.remove(charLeft);
+            }
+
+            left++;
+
+            if (s1Count.equals(s2Count)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
+    public int minimumTimeToInitialState(String word, int k)
+    {
+        int c =0;
+        int s = word.length();
+        String copy = word;
+        do
+        {
+            copy = copy.substring(k) + "*".repeat(k);
+            c++;
+
+        }
+        while(!check(word,copy));
+
+        return c;
+
+
+
+
+    }
+
+    public boolean check(String word, String target)
+    {
+        int n = word.length();
+
+        for(int i = 0 ; i < n ; i++)
+        {
+            if(target.charAt(i) != '*' && target.charAt(i) != word.charAt(i))
+                return false;
+
+
+        }
+
+        return true;
+    }
+
+    public int minimumTimeToInitialState1(String word, int k) {
+        int c=1;
+        for(int i=k;i<word.length();i+=k){
+            if(check(word,i)){
+                return c;
+            }
+            c++;
+        }
+        return c;
+    }
+
+    private boolean check(String word,int idx){
+        for(int i=idx;i<word.length();i++){
+            if(word.charAt(i-idx) != word.charAt(i)){
+                return false;
+            }
+        }
+        return true;
+    }
+
+    public int maxFreqSum(String s) {
+        int[] c = new int[26];
+
+        for (char t : s.toCharArray()) {
+            c[t - 'a']++; // count frequency
+        }
+
+        int maxVowl = 0;
+        int maxCon = 0;
+
+        for (int idx = 0; idx < 26; idx++) {
+            int freq = c[idx];
+            if (freq == 0) continue;
+
+            char ch = (char)(idx + 'a');
+            if (ch == 'a' || ch == 'e' || ch == 'i' || ch == 'o' || ch == 'u') {
+                maxVowl = Math.max(maxVowl, freq);
+            } else {
+                maxCon = Math.max(maxCon, freq);
+            }
+        }
+
+        return maxVowl + maxCon;
+    }
+
+
+    public List<String> stringMatching(String[] words) {
+        List<String> result = new ArrayList<>();
+        for (int i = 0; i < words.length; i++) {
+            for (int j = 0; j < words.length; j++) {
+                if (i != j && words[j].contains(words[i])) {
+                    result.add(words[i]);
+                    break; // no need to check further
+                }
+            }
+        }
+        return result;
+    }
+
+    public static String fractionToDecimal(int numerator, int denominator)
+    {
+
+        double result =  numerator / denominator;
+
+        String ans[] = String.valueOf(result).split("//.");
+        String first = ans[0];
+
+        String second = ans[1];
+
+        HashMap<Character,Integer> m = new HashMap<>();
+         int count = 0;
+         String s = "";
+        for(char t : second.toCharArray())
+        {
+            if(!m.containsKey(t)) {
+                m.put(t, 1);
+                count++;
+
+            }
+            else
+            {
+                m.put(t,m.getOrDefault(t,0) - 1);
+
+                if(m.get(t) == 0 ) {
+                    m.remove(t);
+                    s = s + t;
+
+                }
+                count--;
+
+                if(count == 0)
+                    break;
+
+            }
+
+
+
+        }
+
+        return first + "(" + s + ")";
+
+    }
+
+
+//    Input:  s = "abcda"
+//    Output: 2
+//    Explanation: Insert 'd' and 'c' → "adcba" or "abcdcba"
+
+    public static int minimumOps(String s)
+    {
+        int count = 0;
+        int countOdds = 0;
+        HashMap<Character,Integer> m = new HashMap<>();
+
+        for(char t : s.toCharArray())
+            m.put(t,m.getOrDefault(t, 0) + 1);
+
+
+        for(char t : m.keySet())
+        {
+            if(m.get(t) % 2 != 0)
+                countOdds++;
+
+        }
+
+        if(countOdds <= 1)
+            return 0;
+
+        else
+        {
+            for(char t : m.keySet())
+            {
+                if(m.get(t) % 2 != 0)
+                {
+                    count++;
+                }
+
+            }
+
+        }
+
+        return count - 1;
+
+    }
+
+
+    public static int minimumInsertions(String s) {
+        Map<String, Integer> memo = new HashMap<>();
+        return helper(s, 0, s.length() - 1, memo);
+    }
+
+    private static int helper(String s, int i, int j, Map<String, Integer> memo) {
+        if (i >= j) return 0; // base case
+
+        String key = i + "," + j; // unique key for substring s[i..j]
+        if (memo.containsKey(key)) return memo.get(key);
+
+        int result;
+        if (s.charAt(i) == s.charAt(j)) {
+            result = helper(s, i + 1, j - 1, memo);
+        } else {
+            result = 1 + Math.min(helper(s, i + 1, j, memo),
+                    helper(s, i, j - 1, memo));
+        }
+
+        memo.put(key, result);
+        return result;
+    }
 }

@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 import java.util.Arrays;
 import java.util.HashMap;

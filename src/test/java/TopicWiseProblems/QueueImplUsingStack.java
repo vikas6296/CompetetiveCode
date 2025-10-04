@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 import java.util.ArrayDeque;
 import java.util.Queue;

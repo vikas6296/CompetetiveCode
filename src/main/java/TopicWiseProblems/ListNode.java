@@ -1,6 +1,4 @@
-package org.example;
-
-import java.util.List;
+package TopicWiseProblems;
 
 public class ListNode {
 
@@ -156,6 +154,120 @@ public class ListNode {
 
         // Either both are null (no intersection), or both point to intersection
         return a;
+    }
+
+    TreeNode prev = null;
+    public void flatten(TreeNode root) { // code to convert the flatten binary tree to linked list
+        if(root == null)
+            return ;
+
+        flatten(root.right);
+        flatten(root.left);
+
+        root.right = prev;
+        root.left = null;
+        prev = root;
+
+    }
+
+
+    public boolean isPalindrome(ListNode head) {
+        if (head == null || head.next == null) return true;
+
+        // Step 1: Find middle using slow & fast pointers
+        ListNode slow = head, fast = head;
+        while (fast != null && fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // Step 2: Reverse second half
+        ListNode secondHalfHead = reverse(slow);
+
+        // Step 3: Compare both halves
+        ListNode p1 = head;
+        ListNode p2 = secondHalfHead;
+        while (p2 != null) {
+            if (p1.val != p2.val) return false;
+            p1 = p1.next;
+            p2 = p2.next;
+        }
+
+        return true;
+    }
+
+    private ListNode reverse(ListNode head) {
+        ListNode prev = null;
+        while (head != null) {
+            ListNode next = head.next;
+            head.next = prev;
+            prev = head;
+            head = next;
+        }
+        return prev;
+    }
+
+
+    // to find the middle of the linked list
+    public ListNode middleNode(ListNode head) {
+        if(head == null || head.next == null)
+            return head;
+
+        ListNode slow = head;
+        ListNode fast = head;
+
+        while(fast != null && fast.next != null )
+        {
+            slow = slow.next;
+            fast = fast.next.next;
+
+        }
+        return slow;
+
+    }
+
+    public ListNode sortList(ListNode head) {
+        if (head == null || head.next == null)
+            return head;
+
+        // Split the list
+        ListNode mid = getMid(head);
+        ListNode left = sortList(head);
+        ListNode right = sortList(mid);
+
+        return merge(left, right);
+    }
+
+    // Function to get the middle and split the list
+    private ListNode getMid(ListNode head) {
+        ListNode slow = head, fast = head, prev = null;
+        while (fast != null && fast.next != null) {
+            prev = slow;
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+
+        // Split the list into two halves
+        if (prev != null) prev.next = null;
+        return slow;
+    }
+
+    // Merge two sorted lists
+    private ListNode merge(ListNode l1, ListNode l2) {
+        ListNode dummy = new ListNode(0), tail = dummy;
+        while (l1 != null && l2 != null) {
+            if (l1.val <= l2.val) {
+                tail.next = l1;
+                l1 = l1.next;
+            } else {
+                tail.next = l2;
+                l2 = l2.next;
+            }
+            tail = tail.next;
+        }
+
+        tail.next = (l1 != null) ? l1 : l2;
+        return dummy.next;
     }
 
 }

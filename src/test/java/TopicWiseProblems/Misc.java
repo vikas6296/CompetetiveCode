@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 import java.util.*;
 
@@ -664,6 +664,144 @@ return null;
 
 return -1;
 
+    }
+
+
+    public static void mergeSort(int a[],int left,int right)
+    {
+       if(left <= right)
+       {
+           int mid = left + (right - left) / 2;
+
+           mergeSort(a,left,mid);
+           mergeSort(a,mid + 1,right);
+
+           merge(a,left,right,mid);
+
+       }
+    }
+
+    public static void merge(int a[],int left,int right,int mid)
+    {
+        int leftHalf[] = new int[mid - left];
+        int rightHalf[]= new int[mid - right + 1];
+
+        for(int i = 0 ; i < leftHalf.length ; i++)
+        {
+            leftHalf[i] = a[left + 1];
+        }
+        for(int j = 0 ; j < rightHalf.length ; j++)
+        {
+            rightHalf[j] = a[ mid + 1 + j];
+        }
+
+        int leftIndex = 0;
+        int rightIndex = 0;
+        int k = left;
+
+        while(leftIndex != leftHalf.length && rightIndex != rightHalf.length)
+        {
+            if(leftHalf[leftIndex] <= rightHalf[rightIndex])
+            {
+                a[k++] = leftHalf[leftIndex++];
+            }
+            else
+            {
+                a[k++] = rightHalf[rightIndex++];
+            }
+
+
+        }
+        while(leftIndex !=  leftHalf.length)
+            a[k++] = leftHalf[leftIndex++];
+
+        while(rightIndex != rightHalf[rightIndex++])
+            a[k++] = rightHalf[rightIndex++];
+
+    }
+
+
+    public List<Integer> countSmaller(int[] nums)
+    {
+        int count = 0;
+        List<Integer> result = new ArrayList<>();
+        mergeSorting(nums,0,nums.length,count,result);
+        return result;
+
+    }
+    public static void mergeSorting(int []nums,int left,int right,int count,List<Integer> result)
+    {
+        if(left < right)
+        {
+            int mid = left + right / 2;
+
+            mergeSorting(nums,left,mid ,count,result);
+            mergeSorting(nums,mid + 1,right ,count,result);
+
+            mergeIn(nums,left,right,mid,count,result);
+        }
+
+    }
+    public static void mergeIn(int n[],int left,int right,int mid,int count,List<Integer> result)
+    {
+        int leftHalf[] = new int[mid - left];
+        int rightHalf[] = new int[mid - right + 1];
+
+        for(int i = 0 ; i < leftHalf.length ; i++)
+        {
+            leftHalf[i] = n[left + i];
+        }
+        for(int j = 0 ; j < rightHalf.length ; j++)
+        {
+            rightHalf[j] = n[j + mid + 1];
+        }
+
+        int leftIndex = 0;
+        int rightIndex = 0;
+        int k = left;
+
+        while(leftIndex < leftHalf.length && rightIndex < rightHalf.length)
+        {
+            if(leftHalf[leftIndex] < rightHalf[rightIndex])
+            {
+                n[k++] = leftHalf[leftIndex++];
+                count++;
+            }
+            else
+            {
+                n[k++] = rightHalf[rightIndex++];
+            }
+        }
+
+        while(leftIndex < leftHalf.length)
+          n[k++] = leftHalf[leftIndex++];
+
+        while(rightIndex < rightHalf.length)
+            n[k++] = rightHalf[rightIndex++];
+
+
+        result.add(count);
+    }
+
+
+//    You are given an array of integers nums and an integer target.
+//    Return the indices of the two numbers such that they add up to target.
+    public static int[] twoSum(int a[],int target)
+    {
+        HashMap<Integer,Integer> m = new HashMap<>();
+
+        for(int i  = 0 ; i < a.length ; i++)
+        {
+            int rem = target - i;
+
+            if(m.containsKey(rem))
+                return new int[]{i,m.get(i)};
+
+            m.put(a[i],i);
+
+        }
+
+     return new int[]{};
     }
 
 

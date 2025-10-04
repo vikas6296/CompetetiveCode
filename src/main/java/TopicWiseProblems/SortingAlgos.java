@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 import java.util.Arrays;
 
@@ -177,5 +177,38 @@ public class SortingAlgos {
 
     }
 
+
+    public int dominantIndex(int[] nums)
+    {
+        int max = 0 ;
+        int secondMax = 0;
+
+        for(int i : nums)
+        {
+            if(i > max)
+            {
+                secondMax = max;
+                max = i;
+            }
+            else if(i >= secondMax && i != max)
+            {
+                secondMax = i;
+            }
+        }
+
+
+        if(max / 2 >= secondMax)
+        {
+            for(int i = 0 ; i < nums.length ; i++)
+            {
+                if(max == nums[i])
+                    return i;
+            }
+
+        }
+
+        return -1;
+
+    }
 
 }

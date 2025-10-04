@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 import java.math.BigInteger;
 import java.util.*;
@@ -55,7 +55,7 @@ public class ArraysMisc {
 
         //combine(1,1);
 
-      //  System.out.println(permute(new int []{1,2,3}));
+        //System.out.println(permute(new int []{1,2,3}));
 
         //System.out.println(groupAnagrams(new String []{"eat","tea","tan","ate","nat","bat"}));
 
@@ -106,7 +106,11 @@ public class ArraysMisc {
 
        // System.out.println(countFrequence());
 
-        System.out.println(Arrays.toString(checkDuplicate()));
+        //System.out.println(Arrays.toString(checkDuplicate()));
+
+       // System.out.println(canPick(new int []{3, 2, 7, 10}));
+
+        System.out.println(longestSubstring("ababbc",2));
 
     }
 //    Input: num = "1432219", k = 33
@@ -2137,6 +2141,290 @@ public static List<Integer> gen(int i )
        }
 
         return result;
+
+    }
+
+
+
+    public int numIslands(char[][] grid)
+    {
+        if(grid.length == 0 || grid == null )
+             return 0 ;
+
+        int m = grid.length;
+        int n = grid[0].length;
+        int count = 0;
+
+        int dir[][] ={{0,1},{1,0},{-1,0},{0,-1}};
+
+        for(int i = 0 ; i < m ; i++)
+        {
+            for(int j = 0 ; j < n ; j++)
+            {
+                if(grid[i][j] == '1')
+                {
+                    count++;
+
+                    Queue<int[]> node = new LinkedList<>();
+                    node.offer(new int[]{i,j});
+                    grid[i][j] ='0';
+
+
+                    while(!node.isEmpty())
+                    {
+                        int []cell = node.poll();
+
+                        int nx = cell[0];
+                        int ny = cell[1];
+
+                        for(int t[] : dir) {
+                            int x = t[0];
+                            int y = t[1];
+
+                       int x1 = x  + nx;
+                       int y1 = y + ny;
+
+                            if(x1 >= 0 && x1 < m && y1 >= 0 && y1 < n && grid[x1][y1] == '1')
+                            {
+                                node.offer(new int []{nx,ny});
+                                grid[x1][y1] = '0'; // mark visited
+                            }
+
+                        }
+
+
+
+
+
+                    }
+
+
+                }
+
+
+            }
+
+        }
+        return count;
+    }
+
+//    Input: nums = [3, 2, 7, 10]
+//    Output: 13
+//    Explanation: Pick 3 + 10 = 13, cannot pick 7 because it is adjacent to 10.
+//    vbnet
+//    Copy code
+//    Input: nums = [3, 2, 5, 10, 7]
+//    Output: 15
+//    Explanation: Pick 3 + 5 + 7 = 15 or 3 + 10 = 13, max is 15
+
+    public static int canPick(int a[])
+    {
+        int next = 0 ;
+        int current = 0;
+
+        for(int i : a)
+        {
+            int temp = Math.max(i + current , next);
+            current = next;
+            next = temp;
+
+        }
+
+        return next;
+
+
+    }
+
+
+//    Input: nums = [3,2,1]
+//    Output: 1
+//    Explanation:
+//    The first distinct maximum is 3.
+//    The second distinct maximum is 2.
+//    The third distinct maximum is 1.
+
+    public static int getThirdMaximumNumber(int a[])
+    {
+        HashSet<Integer> h = new HashSet<>();
+
+        for(int i : a)
+            h.add(i);
+
+       PriorityQueue<Integer> p = new PriorityQueue<>();
+
+       for(int i : h)
+       {
+           p.offer(i);
+
+           while(p.size() > 3)
+               p.poll();
+
+       }
+
+        if(p.size() == 3)
+            return p.peek();
+
+        int max = 0;
+
+         while(!p.isEmpty())
+              max = p.poll();
+
+         return max;
+    }
+
+
+
+    //System.out.println(longestSubstring("ababbc", 2));   // Output: 5 ("ababb")
+    public static int longestSubstring(String a,int k)
+    {
+     int left = 0 ;
+     HashMap<Character,Integer> m = new HashMap<>();
+     int maxLength = 0;
+     char t [] = a.toCharArray();
+
+     for(int right = 0 ; right < a.length() ; right++)
+     {
+         m.put(t[right],m.getOrDefault(t[right], 0) + 1);
+
+         while(m.size() > k)
+         {
+             int val = m.get(t[left]);
+             val = val - 1;
+             m.put(t[left],val);
+
+             if(m.get(t[left]) <= 0)
+                 m.remove(t[left]);
+
+             left++;
+
+         }
+
+         maxLength  = Math.max(maxLength,right - left + 1);
+
+     }
+
+     return maxLength;
+    }
+
+
+
+    public static int longestSubstringAtK(String a,int k)
+    {
+
+       if(a.length() == 0 || k > a.length())
+           return 0;
+
+        int count [] = new int[26];
+
+        for(char u : a.toCharArray())
+             count[u - 'a']++;
+
+
+
+        for(int i = 0 ; i < a.length() ; i++)
+        {
+          if(count[a.charAt(i) - 'a'] < k)
+          {
+              int left = longestSubstringAtK(a.substring(0,i),k);
+              int right = longestSubstringAtK(a.substring(i + 1),k);
+
+               return Math.max(left,right);
+
+          }
+
+
+        }
+
+        return a.length();
+
+    }
+
+    public static int longestPalindrome(String s)
+    {
+        String max =s.substring(0,1);
+        int maxLength = max.length();
+
+        for(int i = 0 ; i < s.length() ; i++)
+        {
+            int left = sort(s,i,i);
+            int right = sort(s, i, i + 1);
+
+            if(left > right)
+                maxLength = Math.max(maxLength,left);
+
+            else
+                maxLength = Math.max(maxLength,right);
+
+        }
+
+        return maxLength;
+
+    }
+    public static int sort(String s, int left , int right)
+    {
+        while(left >= 0 &&  right < s.length() && s.charAt(left) == s.charAt(right))
+        {
+            left--;
+            right++;
+        }
+
+        return s.substring(left + 1 , right ).length();
+    }
+
+   /* You are given an integer array nums.
+
+    Split the array into exactly two subarrays, left and right, such that left is strictly increasing and right is strictly decreasing.
+
+    Return the minimum possible absolute difference between the sums of left and right. If no valid split exists, return -1.
+
+
+
+    Example 1:
+
+    Input: nums = [1,3,2]
+
+    Output: 2*/
+
+
+//    Input: nums = [1,2,4,3]
+//
+//    Output: 4
+
+    public static int getArray(int a[])
+    {
+        int l = 0;
+        int r = a.length - 1;
+        int lsum = 0;
+        int rsum = 0;
+
+        while(l < a.length - 1 && a[l] < a[l  + 1]) {
+            lsum += a[l];
+            l++;
+        }
+        while(r > 0 && a[r] > a[r - 1])
+        {
+            rsum += a[r];
+            r--;
+        }
+
+        // peak elements
+         if(l == r)
+         {
+             int i = Math.abs((lsum + a[l]) - rsum);
+             int j = Math.abs(lsum - (rsum + a[l]));
+
+             return Math.min(i,j);
+         }
+
+         else if(a[l] == a[r] && r - l == 1)
+         {
+             int i = Math.abs(lsum - rsum);
+
+             return i;
+         }
+
+         else
+             return -1;
 
     }
 

@@ -1,7 +1,6 @@
-package org.example;
+package TopicWiseProblems;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 public class SlidingWindowProblems
 {
@@ -9,7 +8,11 @@ public class SlidingWindowProblems
     {
        // System.out.println(longestRepeatingCharacter("aabcdea"));
 
-        System.out.println(lengthOfLongestSubstring("aabcd"));
+       // System.out.println(lengthOfLongestSubstring("aabcd"));
+
+       // System.out.println(maximumUniqueSubarray(new int []{4,2,4,5,6}));
+
+        System.out.println(longCharacterNonRepeating("aabcdea"));
 
     }
     public static int longestRepeatingCharacter(String a)
@@ -157,4 +160,166 @@ return max;
 
         return minLength == Integer.MAX_VALUE ? 0 : minLength;
     }
+
+    public static int maximumUniqueSubarray(int[] nums) {
+
+
+
+        int start = 0, end = 0;
+        int max = 0;
+        int sum = 0;
+        HashSet<Integer> h = new HashSet<>();
+
+        while (end < nums.length) {
+            if (!h.contains(nums[end])) {
+                sum += nums[end];
+                h.add(nums[end]);
+                max = Math.max(max, sum);
+                end++;
+            } else {
+                h.remove(nums[start]);
+                sum -= nums[start];
+                start++;
+            }
+        }
+
+        return max;
+    }
+
+
+       public static int longCharacterNonRepeating(String s)
+       {
+           HashSet<Character> h = new HashSet<>();
+           char t[] = s.toCharArray();
+           int max = Integer.MIN_VALUE;
+           int left = 0;
+           int right = 0;
+
+           while(right < t.length)
+           {
+               if(!h.contains(t[right])) {
+                   h.add(t[right]);
+                   right++;
+               }
+               else {
+                   max = Math.max(max,right - left);
+                   h.remove(t[left]);
+                   left++;
+
+
+               }
+
+       }
+
+
+           return max;
+
+       }
+
+
+
+    public List<Integer> findAnagrams(String s, String p) {
+        List<Integer> result = new ArrayList<>();
+        if (s.length() < p.length()) return result;
+
+        int[] pCount = new int[26];
+        int[] sCount = new int[26];
+
+        for (int i = 0; i < p.length(); i++) {
+            pCount[p.charAt(i) - 'a']++;
+            sCount[s.charAt(i) - 'a']++;
+        }
+
+        if (Arrays.equals(pCount, sCount)) result.add(0);
+
+        for (int i = p.length(); i < s.length(); i++) {
+            sCount[s.charAt(i) - 'a']++; // add right char
+            sCount[s.charAt(i - p.length()) - 'a']--; // remove left char
+
+            if (Arrays.equals(pCount, sCount)) result.add(i - p.length() + 1);
+        }
+
+        return result;
+
+
+    }
+
+
+    public int countGoodSubstrings(String s) {
+        int i=0, j=0, count=0;
+        while(j<s.length()){
+            if(j-i+1==3){
+                if(s.charAt(i) != s.charAt(i+1) && s.charAt(i+1) != s.charAt(i+2)
+                        && s.charAt(i+2) != s.charAt(i)){
+                    count++;
+                }
+                i++;
+            }
+            j++;
+        }
+        return count;
+    }
+
+   // https://leetcode.com/problems/alternating-groups-i/description/?envType=problem-list-v2&envId=sliding-window
+
+    public int countKConstraintSubstrings(String s, int k) {
+        int n = s.length();
+        int left = 0, count0 = 0, count1 = 0;
+        int result = 0;
+
+        for (int right = 0; right < n; right++) {
+            if (s.charAt(right) == '0') {
+                count0++;
+            } else {
+                count1++;
+            }
+
+            // shrink window if both exceed k
+            while (count0 > k && count1 > k) {
+                if (s.charAt(left) == '0') {
+                    count0--;
+                } else {
+                    count1--;
+                }
+                left++;
+            }
+
+            // all substrings ending at right and starting from [left..right]
+            result += (right - left + 1);
+        }
+
+        return result;
+    }
+
+//    Example 1:
+//
+//    Input: nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2
+//    Output: 6
+//    Explanation: [1,1,1,0,0,1,1,1,1,1,1]
+//    Bolded numbers were flipped from 0 to 1. The longest subarray is underlined.
+    public int longestOnes(int[] nums, int k)
+    {
+
+
+        int left = 0, maxLength = 0, zeroCount = 0;
+        for (int right = 0; right < nums.length; ++right) {
+            if (nums[right] == 0) {
+                zeroCount++;
+            }
+            while (zeroCount > k) {
+                if (nums[left] == 0) {
+                    zeroCount--;
+                }
+                left++;
+            }
+            maxLength = Math.max(maxLength, right - left + 1);
+        }
+        return maxLength;
+
+
+
+    }
+
+    
+
 }

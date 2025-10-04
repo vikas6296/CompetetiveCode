@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 import javax.swing.*;
 import java.lang.reflect.Array;
@@ -179,7 +179,184 @@ public class PriorityQueueProblem
 
     }
 
+    public static int getSecondHighestFreqLinear(int[] a) {
+        Map<Integer, Integer> freqMap = new HashMap<>();
+
+        for (int num : a) {
+            freqMap.put(num, freqMap.getOrDefault(num, 0) + 1);
+        }
+
+        int first = 0, second = 0;
+        for (int freq : freqMap.values()) {
+            if (freq > first) {
+                second = first;
+                first = freq;
+            } else if (freq > second && freq != first) {
+                second = freq;
+            }
+        }
+
+        for (Map.Entry<Integer, Integer> entry : freqMap.entrySet()) {
+            if (entry.getValue() == second) return entry.getKey();
+        }
+
+        return -1;
+    }
+
+    public static int getParity(String num) {
 
 
 
+        String str = String.valueOf(num);
+        int len = str.length();
+        char res[] = new char[len];
+        PriorityQueue<Integer> even = new PriorityQueue<>();
+        PriorityQueue<Integer> odd = new PriorityQueue<>();
+        ArrayList<Integer> evenIdxs = new ArrayList<>();
+        ArrayList<Integer> oddIdxs = new ArrayList<>();
+
+        for (int i = 0; i < len; i++) {
+            int d = str.charAt(i) - '0';
+            if (d % 2 == 0) {
+                evenIdxs.add(i);
+                even.offer(d);
+            } else {
+                oddIdxs.add(i);
+                odd.offer(d);
+            }
+        }
+
+        int evenLastIdx = evenIdxs.size() - 1;
+        int oddLastIdx = oddIdxs.size() - 1;
+        while (even.size() > 0) {
+            int val = even.poll();
+            res[evenIdxs.get(evenLastIdx)] = (char) (val + '0');
+            evenLastIdx--;
+        }
+
+        while (odd.size() > 0) {
+            int val = odd.poll();
+            res[oddIdxs.get(oddLastIdx)] = (char) (val + '0');
+            oddLastIdx--;
+        }
+
+        return Integer.valueOf(new String(res));
+
+    }
+
+//    Input: amount = [1,4,2]
+//    Output: 4
+//    Explanation: One way to fill up the cups is:
+//    Second 1: Fill up a cold cup and a warm cup.
+//        Second 2: Fill up a warm cup and a hot cup.
+//        Second 3: Fill up a warm cup and a hot cup.
+//        Second 4: Fill up a warm cup.
+//    It can be proven that 4 is the minimum number of seconds needed.
+
+    public int fillCups(int[] arr) {
+        int res=0;
+        PriorityQueue<Integer> pq=new PriorityQueue<>(Collections.reverseOrder());
+        for(int num:arr){
+            if(num!=0)
+                pq.offer(num);
+        }
+        while(!pq.isEmpty()){
+            while(pq.contains(0))
+                pq.remove(0);
+            if(pq.isEmpty()) break;
+            if(pq.size() > 1){
+                res++;
+                int a = pq.poll();
+                int b = pq.poll();
+                pq.offer(a-1);
+                pq.offer(b-1);
+            }else if(pq.size() == 1){
+                res++;
+                pq.offer(pq.poll()-1);
+            }
+        }
+        return res;
+    }
+
+
+    public static int[] topKFrequent1(int[] nums, int k) {
+        // Step 1: Frequency map
+        Map<Integer, Integer> freqMap = new HashMap<>();
+        for (int num : nums) {
+            freqMap.put(num, freqMap.getOrDefault(num, 0) + 1);
+        }
+
+        // Step 2: Min Heap of size k based on frequency
+        PriorityQueue<Integer> pq = new PriorityQueue<>(
+                (a, b) -> freqMap.get(a) - freqMap.get(b)
+        );
+
+        for (int num : freqMap.keySet()) {
+            pq.offer(num);
+            if (pq.size() > k) {
+                pq.poll();
+            }
+        }
+
+        // Step 3: Extract result from heap
+        int[] result = new int[k];
+        int i = 0;
+        while (!pq.isEmpty()) {
+            result[i++] = pq.poll();
+        }
+
+        return result;
+    }
+
+    public int[] findXSum(int[] nums, int k, int x) {
+        //window size is always k
+        int len = nums.length;
+        HashMap<Integer, Integer> freqMap = new HashMap<>();
+        Comparator<Integer> c = Comparator.comparingInt((Integer a) -> freqMap.get(a)).thenComparingInt(a -> a);
+        PriorityQueue<Integer> minHeap = new PriorityQueue<>(c);
+
+        //first window
+        for(int i=0;i<k;i++){
+            freqMap.put(nums[i], freqMap.getOrDefault(nums[i], 0)+1);
+        } //freqMap for first window
+
+        for(int key : freqMap.keySet()){
+            minHeap.add(key);
+
+            if(minHeap.size() > x) minHeap.poll();
+        } //priorityQueue of size k
+
+        int[] sum = new int[len+1-k];
+
+        for(int num:minHeap){
+            sum[0] += (num*freqMap.get(num));
+        }
+
+        for(int i=k;i<len;i++){//sliding the window
+            int left = nums[i-k]; //element to remove
+            int right = nums[i]; //element to add
+
+            //removing element at left
+            freqMap.put(left, freqMap.get(left) -1);
+            if(freqMap.get(left) ==0){
+                freqMap.remove(left);
+            }
+
+            //adding element at the right
+            freqMap.put(right, freqMap.getOrDefault(right, 0)+1);
+
+            //rebuilding the priority Queue
+            minHeap.clear();
+            for(int key : freqMap.keySet()){
+                minHeap.add(key);
+                if(minHeap.size() > x) minHeap.poll();
+            }
+
+            for(int num:minHeap){
+                sum[i+1-k] += (num*freqMap.get(num));
+            }
+        }
+
+        return sum;
+    }
 }

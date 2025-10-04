@@ -1,9 +1,6 @@
-package org.example;
+package TopicWiseProblems;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 
 //    plaintext
 //    Copy code
@@ -285,4 +282,125 @@ return sb.toString();
         }
     }
 
+
+
+// count consecutive 0 and 1 binary string
+    public int countBinarySubstrings(String s) {
+        int prev = 0;
+        int curr = 1;
+        int result = 0;
+
+        for (int i = 1; i < s.length(); i++) {
+            if (s.charAt(i) == s.charAt(i - 1)) {
+                curr++;
+            } else {
+                result += Math.min(prev, curr);
+
+                prev = curr;
+                curr = 1;
+            }
+        }
+        result += Math.min(prev, curr);
+
+        return result;
+    }
+
+    public int[] shortestToChar(String s, char c) {
+        int l = 0, r = 0;
+        int n = s.length();
+        int[] arr = new int[n];
+        int shortest = Integer.MAX_VALUE - 1; // initialize shortest with max
+        while(l < n && r < n) {
+            if(s.charAt(r) == c) {
+                while(l <= r) {
+                    shortest = Math.min(shortest + 1, (r - l));
+                    // compare shortest and current distance from right pointer
+                    // as sometimes right pointer maybe far than prev occurred character
+                    arr[l] = shortest;
+                    l++;
+                }
+            }
+            r++;
+        }
+        // For Left Over elements to update with shotest distance so far
+        // shortest is incremented because for each upcomming element distance from the character is increased by +1
+        while(l < n) {
+            shortest++;
+            arr[l] = shortest;
+            l++;
+        }
+        return arr;
+    }
+
+    public int eraseOverlapIntervals(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -> a[1] - b[1]);
+
+        int end = intervals[0][1];
+        int count = 0;
+
+        for (int i = 1; i < intervals.length; i++) {
+            if (intervals[i][0] < end) {
+                count++; // overlap, remove this one
+            } else {
+                end = intervals[i][1];
+            }
+        }
+        return count;
+    }
+
+    public int canCompleteCircuit1(int[] gas, int[] cost) {
+
+        int totalGas = 0;
+        int totalCost = 0;
+        int tank = 0;
+        int start = 0;
+
+        for (int i = 0; i < gas.length; i++) {
+            totalGas += gas[i];
+            totalCost += cost[i];
+            tank += gas[i] - cost[i];
+
+            if (tank < 0) {
+                // Can't reach next station from current start
+                start = i + 1;
+                tank = 0;
+            }
+        }
+
+        return (totalGas < totalCost) ? -1 : start;
+
+    }
+
+
+    public boolean isPossible(int[] nums) {
+        HashMap<Integer, Integer> freq = new HashMap<>();
+        HashMap<Integer, Integer> need = new HashMap<>();
+
+        // Step 1: Count frequency of each number
+        for (int num : nums) {
+            freq.put(num, freq.getOrDefault(num, 0) + 1);
+        }
+
+        // Step 2: Try to place each number into a valid sequence
+        for (int num : nums) {
+            if (freq.get(num) == 0) continue;
+
+            if (need.getOrDefault(num, 0) > 0) {
+                // Append to existing subsequence
+                freq.put(num, freq.get(num) - 1);
+                need.put(num, need.get(num) - 1);
+                need.put(num + 1, need.getOrDefault(num + 1, 0) + 1);
+            } else if (freq.getOrDefault(num + 1, 0) > 0 && freq.getOrDefault(num + 2, 0) > 0) {
+                // Start a new subsequence
+                freq.put(num, freq.get(num) - 1);
+                freq.put(num + 1, freq.get(num + 1) - 1);
+                freq.put(num + 2, freq.get(num + 2) - 1);
+                need.put(num + 3, need.getOrDefault(num + 3, 0) + 1);
+            } else {
+                return false;
+            }
+        }
+
+        return true;
+    }
 }

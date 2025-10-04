@@ -1,18 +1,13 @@
-package org.example;
+package TopicWiseProblems;
 
-import com.sun.source.tree.Tree;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.*;
 
 public class TreeNode
 {
     public int val;
    public TreeNode left ;
    public TreeNode right ;
+    public List<TreeNode> neighbors;
 
     public TreeNode(int x)
     {
@@ -619,5 +614,479 @@ public List<List<Integer>> levelOrder2(TreeNode root) {
     }
 
 
+    public boolean findTarget(TreeNode root, int k) {
+        Set<Integer> s = new HashSet<>();
+        return checkValid(root,k,s);
 
+
+
+    }
+
+    public boolean checkValid(TreeNode root, int k,Set<Integer> s)
+    {
+        if(root == null)
+            return false ;
+
+        if(s.contains(k - root.val))
+            return true;
+
+        s.add(root.val);
+
+        return checkValid(root.left,k,s)|| checkValid(root.right,k,s);
+
+
+    }
+
+    public int maxLevelSum(TreeNode root) {
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+        int maxSum = Integer.MIN_VALUE;
+        int level = 1, maxLevel = 1;
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            int currentSum = 0;
+
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                currentSum += node.val;
+
+                if (node.left != null) queue.add(node.left);
+                if (node.right != null) queue.add(node.right);
+            }
+
+            if (currentSum > maxSum) {
+                maxSum = currentSum;
+                maxLevel = level;
+            }
+            level++;
+        }
+        return maxLevel;
+    }
+
+
+    public List<String> binaryTreePaths(TreeNode root) {
+        List<String> result = new ArrayList<>();
+        if (root != null) {
+            buildPaths(root, "", result);
+        }
+        return result;
+    }
+
+    private void buildPaths(TreeNode node, String path, List<String> result) {
+        if (node.left == null && node.right == null) {
+            // It's a leaf node, path is complete
+            result.add(path + node.val);
+        }
+
+        if (node.left != null) {
+            buildPaths(node.left, path + node.val + "->", result);
+        }
+
+        if (node.right != null) {
+            buildPaths(node.right, path + node.val + "->", result);
+        }
+    }
+
+// merge 2 binary trees
+
+    public TreeNode mergeTrees(TreeNode root1, TreeNode root2) {
+        if (root1 == null) return root2;
+        if (root2 == null) return root1;
+
+        TreeNode merged = new TreeNode(root1.val + root2.val);
+        merged.left = mergeTrees(root1.left, root2.left);
+        merged.right = mergeTrees(root1.right, root2.right);
+        return merged;
+    }
+
+    int maxDiameter = 0;
+
+    public int diameterOfBinaryTree(TreeNode root) {
+        depth(root);
+        return maxDiameter;
+    }
+
+    // Returns the height of the subtree rooted at node
+    private int depth(TreeNode node) {
+        if (node == null) return 0;
+
+        int leftDepth = depth(node.left);
+        int rightDepth = depth(node.right);
+
+        // Update diameter if path through current node is larger
+        maxDiameter = Math.max(maxDiameter, leftDepth + rightDepth);
+
+        // Return height of the current node
+        return 1 + Math.max(leftDepth, rightDepth);
+    }
+
+    public boolean isSubtree(TreeNode root, TreeNode subRoot) {
+        if (root == null) return false;
+
+        if (isSameTree2(root, subRoot)) {
+            return true;
+        }
+
+        return isSubtree(root.left, subRoot) || isSubtree(root.right, subRoot);
+    }
+
+    // Helper method to compare two trees
+    private boolean isSameTree2(TreeNode s, TreeNode t) {
+        if (s == null && t == null) return true;
+        if (s == null || t == null) return false;
+        if (s.val != t.val) return false;
+
+        return isSameTree2(s.left, t.left) && isSameTree2(s.right, t.right);
+    }
+
+   // int sum = 0;
+    public int rangeSumBST(TreeNode root, int low, int high) {
+        if (root == null) return 0;
+
+        if (root.val >= low && root.val <= high)
+            sum += root.val;
+
+        if (root.val > low)
+            rangeSumBST(root.left, low, high);
+
+        if (root.val < high)
+            rangeSumBST(root.right, low, high);
+
+        return sum;
+
+
+    }
+
+    TreeNode prev = null; // To keep track of the last node
+    TreeNode newRoot = null;
+
+    public TreeNode increasingBST(TreeNode root) {
+        inorder(root);
+        return newRoot;
+    }
+
+    private void inorder(TreeNode node) {
+        if (node == null) return;
+
+        inorder(node.left);
+
+        // Process current node
+        if (prev == null) {
+            newRoot = node;  // First (smallest) node becomes new root
+        } else {
+            prev.right = node;
+        }
+        node.left = null;  // Remove left child
+        prev = node;       // Move the pointer
+
+        inorder(node.right);
+
+    }
+
+    public int[] findMode(TreeNode root)
+    {
+        // Frequency map
+        HashMap<Integer, Integer> freqMap = new HashMap<>();
+        addMode(root, freqMap);
+
+        // Find max frequency
+        int maxFreq = 0;
+        for (int freq : freqMap.values()) {
+            maxFreq = Math.max(maxFreq, freq);
+        }
+
+        // Collect all values with max frequency
+        List<Integer> result = new ArrayList<>();
+        for (Map.Entry<Integer, Integer> entry : freqMap.entrySet()) {
+            if (entry.getValue() == maxFreq) {
+                result.add(entry.getKey());
+            }
+        }
+
+        // Convert list to array
+        int[] resArray = new int[result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            resArray[i] = result.get(i);
+        }
+
+        return resArray;
+
+    }
+    public void addMode(TreeNode root,HashMap<Integer,Integer> m)
+    {
+        if(root == null)
+            return ;
+
+        m.put(root.val,m.getOrDefault(root.val,0) + 1);
+
+        addMode(root.left,m);
+        addMode(root.right,m);
+
+
+
+    }
+
+    public static boolean isConsist(TreeNode root, int targetSum) {
+        if (root == null)
+            return false;
+
+        // If it's a leaf node
+        if (root.left == null && root.right == null)
+            return root.val == targetSum;
+
+        // Otherwise, recurse down
+        return isConsist(root.left, targetSum - root.val) ||
+                isConsist(root.right, targetSum - root.val);
+    }
+
+    public int sumNumbers(TreeNode root) {
+        return dfs(root, 0);
+    }
+
+    private int dfs(TreeNode node, int current) {
+        if (node == null) {
+            return 0;
+        }
+
+        // Build the current number
+        current = current * 10 + node.val;
+
+        // If it's a leaf, return the current path number
+        if (node.left == null && node.right == null) {
+            return current;
+        }
+
+        // Sum of left and right subtrees
+        return dfs(node.left, current) + dfs(node.right, current);
+    }
+
+    public static class Node
+    {
+        public int val;
+        public List<Node> children;
+
+        public Node() {}
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val, List<Node> _children) {
+            val = _val;
+            children = _children;
+        }
+
+
+        public List<Integer> postorder(Node root) {
+            // If the root is null, return an empty list
+            if (root == null) return new ArrayList<>();
+
+            List<Integer> res = new ArrayList<>();
+
+            // Start DFS from the root
+            dfs(root, res);
+
+            // Return the result list containing node values in post-order
+            return res;
+        }
+
+        private void dfs(Node root, List<Integer> res) {
+            // Recursively call dfs for each child of the current node
+            for (Node child : root.children) {
+                dfs(child, res);
+            }
+            // Append the value of the current node to the result list
+            res.add(root.val);
+        }
+
+        public boolean leafSimilar(TreeNode root1, TreeNode root2) {
+            List<Integer> leaves1 = new ArrayList<>();
+            List<Integer> leaves2 = new ArrayList<>();
+
+            collectLeaves(root1, leaves1);
+            collectLeaves(root2, leaves2);
+
+            return leaves1.equals(leaves2);
+        }
+
+        private void collectLeaves(TreeNode node, List<Integer> leaves) {
+            if (node == null) return;
+            if (node.left == null && node.right == null) {
+                leaves.add(node.val);
+            }
+            collectLeaves(node.left, leaves);
+            collectLeaves(node.right, leaves);
+        }
+
+    }
+    int min = Integer.MAX_VALUE;
+    Integer prevv = null;  // store last visited node value
+
+    public int minDiffInBST(TreeNode root) {
+        inorder(root);
+        return min;
+    }
+
+    private void inorder5(TreeNode root) {
+        if (root == null) return;
+
+        inorder(root.left);
+
+        if (prev != null) {
+            min = Math.min(min, root.val - prevv);
+        }
+        prevv = root.val;
+
+        inorder(root.right);
+    }
+
+
+    public List<Integer> preorder(Node root) {
+        if (root == null)
+            return new ArrayList<>();
+
+        List<Integer> res = new ArrayList<>();
+
+        dfs(root,res);
+
+        return res;
+
+    }
+
+    public void dfs(Node root,List<Integer> res)
+    {
+        res.add(root.val);
+
+        for(Node child : root.children)
+        {
+            dfs(child,res);
+        }
+
+
+    }
+
+
+
+
+    Stack<TreeNode> stack;
+    public void BSTIterator(TreeNode root) {
+        stack = new Stack<>();
+        TreeNode node = root;
+        updateStack(node);                                      // update stack
+    }
+    public int next() {
+        TreeNode toRemove = stack.pop();
+        updateStack(toRemove.right);                             // before return node, first update stack further
+        return toRemove.val;
+    }
+    public boolean hasNext() {
+        return !stack.isEmpty();
+    }
+    // -------------------
+    public void updateStack(TreeNode node){
+        while(node != null){
+            stack.add(node);
+            node = node.left;
+        }
+    }
+
+
+    // univalued binary tree which has same value in all of the nodes
+    public boolean isUnivalTree(TreeNode root) {
+        return dfsForUniValuedTree(root, root.val);
+    }
+
+    private boolean dfsForUniValuedTree(TreeNode node, int val) {
+        if (node == null) return true;
+        if (node.val != val) return false;
+        return dfsForUniValuedTree(node.left, val) && dfsForUniValuedTree(node.right, val);
+    }
+
+
+    public List<Double> averageOfLevels(TreeNode root) {
+        List<Double> result = new ArrayList<>();
+        if (root == null) return result;
+
+        Queue<TreeNode> queue = new LinkedList<>();
+        queue.add(root);
+
+        while (!queue.isEmpty()) {
+            int size = queue.size();
+            double sum = 0;
+
+            for (int i = 0; i < size; i++) {
+                TreeNode node = queue.poll();
+                sum += node.val;
+
+                if (node.left != null) queue.add(node.left);
+                if (node.right != null) queue.add(node.right);
+            }
+
+            result.add(sum / size);  // average for this level
+        }
+
+        return result;
+    }
+
+
+    public final TreeNode getTargetCopy(final TreeNode original, final TreeNode cloned, final TreeNode target) {
+        if(original==null) return null;
+        if(original==target) return cloned;
+        TreeNode left= getTargetCopy(original.left,cloned.left,target);
+        if(left!=null) return left;
+        return getTargetCopy(original.right,cloned.right,target);
+    }
+
+    public int pathSum2(TreeNode root, int targetSum) {
+        if (root == null) return 0;
+
+        // Count paths starting from this node
+        int count = dfsFromNode(root, targetSum);
+
+        // Also count paths starting in left and right subtrees
+        count += pathSum2(root.left, targetSum);
+        count += pathSum2(root.right, targetSum);
+
+        return count;
+    }
+
+    private int dfsFromNode(TreeNode node, long targetSum) {
+        if (node == null) return 0;
+
+        int count = 0;
+        if (node.val == targetSum) {
+            count++;
+        }
+
+        // Continue path down left and right
+        count += dfsFromNode(node.left, targetSum - node.val);
+        count += dfsFromNode(node.right, targetSum - node.val);
+
+        return count;
+    }
+
+
+
+    class Solution {
+        int moves = 0;
+
+        public int distributeCoins(TreeNode root) {
+            dfs(root);
+            return moves;
+        }
+
+        private int dfs(TreeNode node) {
+            if (node == null) return 0;
+
+            int left = dfs(node.left);
+            int right = dfs(node.right);
+
+            // Count moves needed for balancing children
+            moves += Math.abs(left) + Math.abs(right);
+
+            // Net balance to pass to parent
+            return node.val + left + right - 1;
+        }
+    }
 }

@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -345,4 +345,76 @@ return false;
         // 11. Return the total number of steps in our staircase! 🪜 That's the length of the longest increasing subsequence.
         return len;
     }
+
+    public int findKthPositive(int[] arr, int k) {
+        int start = 0;
+        int end = arr.length - 1;
+
+        while(start <= end)
+        {
+            int mid = start + (end - start) / 2;
+
+            if(arr[mid] - ( mid + 1 ) >= k)
+            {
+
+                end = mid - 1;
+
+            }
+
+            else
+                start = mid + 1;
+        }
+
+        return start + k;
+
+    }
+
+    public boolean judgeSquareSum(int c) {
+        for (long a = 0; a * a <= c; a++) {
+            int b = c - (int)(a * a);
+            if (isPerfectSquare1(b)) return true;
+        }
+        return false;
+    }
+
+    private boolean isPerfectSquare1(int n) {
+        int sqrt = (int) Math.sqrt(n);
+        return sqrt * sqrt == n;
+    }
+
+    /*Input: nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2
+    Output: 6
+    Explanation: [1,1,1,0,0,1,1,1,1,1,1]
+    Bolded numbers were flipped from 0 to 1. The longest subarray is underlined*/
+    public int longestOnes(int[] nums, int k)
+    {
+       int left = 0 ;
+       int right = 0;
+       int max = 0;
+       int count = 0;
+
+       for(left = 0 ; left < nums.length; left++)
+       {
+           if(nums[left] == 0)
+               right++;
+
+           else
+           {
+
+               count++;
+
+
+           }
+
+
+
+       }
+
+   return  0 ;
+    }
+
+
+
+
+
 }

@@ -1,4 +1,4 @@
-package org.example;
+package TopicWiseProblems;
 
 import java.util.*;
 
@@ -127,6 +127,7 @@ public class BackTracking {
 
         backtrack5(nums, new ArrayList<>(), result);
         return result;
+
 
     }
 
@@ -454,6 +455,239 @@ public class BackTracking {
 
     }
 
+    public List<List<String>> solveNQueens(int n) {
+        List<List<String>> ll=new ArrayList<>();
+        HashSet<Integer> col=new HashSet<>();
+        HashSet<Integer> row=new HashSet<>();
+        HashSet<Integer> di1=new HashSet<>();
+        HashSet<Integer> di2=new HashSet<>();
+        char arr[][]=new char[n][n];
+        for(char[] ro:arr)
+            Arrays.fill(ro,'.');
+        back(0,n,arr,col,di1,di2,ll);
+        return ll;
+    }
+    private static void back (int r,int n,char [][]b,Set<Integer> c,Set<Integer> d1,Set<Integer>d2,List<List<String>>ll ){
+        if(r==n){
+            List<String> t=new ArrayList<>();
+            for(char[] ro:b){
+                t.add(new String (ro));
+            }
+            ll.add(t);
+            return;
+        }
+        for(int j=0;j<n;j++){
+            if(c.contains(j)||d1.contains(j+r)||d2.contains(r-j)) continue;
+            b[r][j]='Q';
+            c.add(j);
+            d1.add(r+j);
+            d2.add(r-j);
+            back(r+1,n,b,c,d1,d2,ll);
+            b[r][j]='.';
+            c.remove(j);
+            d1.remove(r+j);
+            d2.remove(r-j);
+        }
+    }
 
 
+    Set<List<Integer>> lists;
+    public List<List<Integer>> findSubsequences(int[] nums) {
+        lists = new HashSet<>();
+        recursion(nums,0,new ArrayList());
+
+        return new ArrayList(lists);
+    }
+    void recursion(int[] nums,int curr,List<Integer> temp)
+    {
+        if(temp.size() >= 2)
+            lists.add(new ArrayList(temp));
+
+        for(int i=curr;i<nums.length;i++)
+        {
+            if(temp.size()==0 || temp.get(temp.size()-1) <= nums[i])
+            {
+                temp.add(nums[i]);
+                recursion(nums,i+1,temp);
+                temp.remove(temp.size()-1);
+            }
+        }
+    }
+
+
+    public int combinationSum4(int[] nums, int target) {
+        return backtrack(nums, target, new HashMap<>());
+    }
+
+    private int backtrack(int[] nums, int target, Map<Integer, Integer> memo) {
+        if (target == 0) return 1;
+        if (memo.containsKey(target)) return memo.get(target);
+
+        int count = 0;
+        for (int num : nums) {
+            if (target >= num) {
+                count += backtrack(nums, target - num, memo);
+            }
+        }
+
+        memo.put(target, count);
+        return count;
+    }
+
+    private static void backtrack(int[] arr, int start, int target,
+                                  List<Integer> current,
+                                  List<List<Integer>> result,
+                                  Set<String> seen) {
+        if (target == 0 && current.size() >= 2) {
+            // Sort and convert to string to avoid duplicates like [2,7] and [7,2]
+            List<Integer> sorted = new ArrayList<>(current);
+            Collections.sort(sorted);
+            String key = sorted.toString();
+            if (!seen.contains(key)) {
+                result.add(new ArrayList<>(sorted));
+                seen.add(key);
+            }
+            return;
+        }
+
+        for (int i = start; i < arr.length; i++) {
+            if (arr[i] > target) continue; // Skip if sum exceeds target
+            current.add(arr[i]);
+            backtrack(arr, i + 1, target - arr[i], current, result, seen);
+            current.remove(current.size() - 1);
+        }
+    }
+
+
+    public boolean makesquare(int[] matchsticks) {
+        int sum = 0;
+        for (int m : matchsticks) sum += m;
+        if (sum % 4 != 0) return false;
+
+        int side = sum / 4;
+        Arrays.sort(matchsticks);
+        reverse(matchsticks); // Descending for pruning
+
+        int[] sides = new int[4];
+        return backtrack(matchsticks, 0, sides, side);
+    }
+
+    private boolean backtrack(int[] sticks, int index, int[] sides, int target) {
+        if (index == sticks.length) {
+            return sides[0] == target && sides[1] == target &&
+                    sides[2] == target && sides[3] == target;
+        }
+        for (int i = 0; i < 4; i++) {
+            if (sides[i] + sticks[index] > target) continue;
+            sides[i] += sticks[index];
+            if (backtrack(sticks, index + 1, sides, target)) return true;
+            sides[i] -= sticks[index];
+        }
+        return false;
+    }
+
+    private void reverse(int[] arr) {
+        int l = 0, r = arr.length - 1;
+        while (l < r) {
+            int tmp = arr[l];
+            arr[l] = arr[r];
+            arr[r] = tmp;
+            l++; r--;
+        }
+    }
+
+    public List<String> permute(String s) {
+        List<String> result = new ArrayList<>();
+        backtrack(result, new StringBuilder(s), 0);
+        return result;
+    }
+
+    private void backtrack(List<String> result, StringBuilder sb, int start) {
+        if (start == sb.length()) {
+            result.add(sb.toString());
+            return;
+        }
+
+        for (int i = start; i < sb.length(); i++) {
+            swap(sb, start, i);                          // choose
+            backtrack(result, sb, start + 1);            // explore
+            swap(sb, start, i);                          // un-choose (backtrack)
+        }
+    }
+
+    private void swap(StringBuilder sb, int left, int right) {
+        char c1 = sb.charAt(left);
+        char c2 = sb.charAt(right);
+        sb.setCharAt(left, c2);
+        sb.setCharAt(right, c1);
+    }
+
+
+    public boolean canPartitionKSubsets(int[] nums, int k) {
+        int sum = 0;
+        for (int num : nums) sum += num;
+
+        if (sum % k != 0) return false;
+        int target = sum / k;
+
+        boolean[] visited = new boolean[nums.length];
+        return backtrack(nums, visited, k, 0, 0, target);
+    }
+
+    private boolean backtrack(int[] nums, boolean[] visited, int k, int start, int currSum, int target) {
+        if (k == 1) return true; // last group must be valid
+        if (currSum == target) {
+            // found one subset, try next
+            return backtrack(nums, visited, k - 1, 0, 0, target);
+        }
+
+        for (int i = start; i < nums.length; i++) {
+            if (visited[i] || currSum + nums[i] > target) continue;
+
+            visited[i] = true;
+            if (backtrack(nums, visited, k, i + 1, currSum + nums[i], target)) return true;
+            visited[i] = false; // backtrack
+        }
+
+        return false;
+    }
+
+
+    public List<String> readBinaryWatch(int num) {
+        List<String> result = new ArrayList<>();
+
+        //range 0-3 are hours and range 4-9 are minutes
+        int[] arr = {1, 2, 4, 8, 1, 2, 4, 8, 16, 32};
+        backtrack(arr, 0, 0, 0, num, result);
+        return result;
+    }
+
+    public void backtrack(int[] arr, int position, int hours, int minutes, int limit, List<String> result) {
+        //when num(limit) reaches to the zero, store hours and minutes into result list
+        if (limit == 0) {
+            //during recursion we might get e.g 4 + 8 = 12 hours which we must skip because max hour value could be 11
+            if(hours <= 11 && minutes <= 59) {
+                StringBuilder builder = new StringBuilder();
+                builder.append(hours).append(":").append(minutes <= 9 ? "0" + minutes : minutes);
+                result.add(builder.toString());
+            }
+            return;
+        }
+
+        //standard backtracking solution add new value do recursion and then remove it
+        for (int i = position; i < arr.length; i++) {
+            if (isHour(i)) hours += arr[i];
+            else minutes += arr[i];
+
+            backtrack(arr, i + 1, hours, minutes, limit - 1, result);
+
+            if (isHour(i)) hours -= arr[i];
+            else minutes -= arr[i];
+        }
+    }
+
+    //Simple check by range: hours or minutes
+    public boolean isHour(int position) {
+        return position >= 0 && position <= 3;
+    }
 }

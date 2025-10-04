@@ -1,7 +1,5 @@
-package org.example;
+package TopicWiseProblems;
 
-import javax.swing.text.html.HTMLDocument;
-import java.lang.reflect.Array;
 import java.util.*;
 
 public class Intervals
@@ -46,8 +44,7 @@ public class Intervals
      //   System.out.println(permute("vikas"));
 
        // System.out.println(countSubarrays(new int []{1,1,1},2));
-
-        //System.out.println(longestConsecutiveSequence(new int []{100, 4, 200, 1, 3, 2}));
+        System.out.println(longestConsecutiveSequence(new int []{100, 4, 200, 1, 3, 2}));
         //System.out.println(Arrays.toString(twoSum2(new int []{2,7,11,15},9)));
         //maxEvents(new int [][]{{1,2},{2,3},{3,4}});
        // System.out.println(permuteUnique(new int []{1,1,2}));
@@ -56,7 +53,7 @@ public class Intervals
 
         //System.out.println(Arrays.toString(maxNumber(new int []{2,1,4,1,7,1,5})));
 
-        System.out.println(Arrays.toString(getProductNumber(new int []{1,2,3,4})));
+       // System.out.println(Arrays.toString(getProductNumber(new int []{1,2,3,4})));
     }
 //    Input: "abcabcbb"
 //    Output: 3
@@ -921,6 +918,101 @@ return count;
 
     }
 
+// abab
+    // ab
+    public static int  checkSubstring(String a, String b)
+    {
+        int count = 0;
+        StringBuilder sb = new StringBuilder();
 
+        while(1 == 1)
+        {
+            sb.append(b);
+            if(a.contains(sb.toString()))
+                count++;
+
+            else
+                break;
+
+        }
+        return count;
+    }
+
+
+}
+
+class Solution {
+    int start; // passed students
+    int end;   // total students
+
+    public Solution(int start, int end) {
+        this.start = start;
+        this.end = end;
+    }
+
+    public Solution() {}
+
+    public double maxAverageRatio(int[][] classes, int extraStudents) {
+        PriorityQueue<Solution> pq = new PriorityQueue<>((a, b) -> {
+            double gainA = gain(a);
+            double gainB = gain(b);
+            return Double.compare(gainB, gainA); // max-heap by gain
+        });
+
+        for (int i = 0; i < classes.length; i++) {
+            pq.offer(new Solution(classes[i][0], classes[i][1]));
+        }
+
+        while (extraStudents-- > 0) {
+            Solution best = pq.poll();
+            best.start++;
+            best.end++;
+            pq.offer(best);
+        }
+
+        double sum = 0.0;
+        for (Solution s : pq) {
+            sum += (double) s.start / s.end;
+        }
+        return sum / classes.length;
+    }
+
+    private double gain(Solution s) {
+        return (double)(s.start + 1) / (s.end + 1) - (double) s.start / s.end;
+    }
+
+//    Example 1:
+//
+//    Input: nums = [1,1,1,0,0,0,1,1,1,1,0], k = 2
+//    Output: 6
+//    Explanation: [1,1,1,0,0,1,1,1,1,1,1]
+//    Bolded numbers were flipped from 0 to 1. The longest subarray is underlined.
+public int longestOnes(int[] nums, int k)
+{
+ int left  = 0;
+ int zeroCount = 0;
+ int max = 0;
+
+
+ for(int right = 0 ; right < nums.length ; right++)
+ {
+     if(nums[right] == 0 )
+     {
+         zeroCount++;
+     }
+
+     while(zeroCount > k)
+     {
+         if(nums[right] == 0)
+         {
+             zeroCount--;
+         }
+
+         left++;
+     }
+     max = Math.max(max,right - left + 1);
+ }
+    return max;
+}
 
 }
